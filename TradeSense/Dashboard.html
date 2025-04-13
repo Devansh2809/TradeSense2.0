@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeSense - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --card: 222.2 84% 4.9%;
+      --card-foreground: 210 40% 98%;
+      --primary: 160 84% 39%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 160 84% 39%;
+      --accent-foreground: 210 40% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --radius: 0.5rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: hsl(var(--foreground));
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-icon {
+      color: #10b981;
+      width: 32px;
+      height: 32px;
+    }
+
+    .brand-name {
+      background: linear-gradient(to right, #10b981, #14b8a6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: transparent;
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      color: hsl(var(--foreground));
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .button-primary {
+      background-color: hsl(var(--primary));
+      border-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+
+    .button-primary:hover {
+      opacity: 0.9;
+    }
+
+    .button-outline {
+      border-color: hsl(var(--border));
+    }
+
+    .button-outline:hover {
+      background-color: rgba(51, 65, 85, 0.2);
+    }
+
+    .button-destructive {
+      background-color: hsl(var(--destructive));
+      border-color: hsl(var(--destructive));
+      color: hsl(var(--destructive-foreground));
+    }
+
+    .button-destructive:hover {
+      opacity: 0.9;
+    }
+
+    /* Market Overview Styles */
+    .market-overview {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .market-overview {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .market-overview {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    .card {
+      background-color: rgba(30, 41, 59, 0.5);
+      border: 1px solid #334155;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 0.875rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .market-card {
+      background-color: rgba(30, 41, 59, 0.5);
+      border: 1px solid #334155;
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .market-card-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: hsl(var(--muted-foreground));
+      margin-bottom: 0.5rem;
+    }
+
+    .market-card-value {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .market-card-change {
+      display: flex;
+      align-items: center;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .positive {
+      color: #10b981;
+    }
+
+    .negative {
+      color: #ef4444;
+    }
+
+    .neutral {
+      color: #94a3b8;
+    }
+
+    .change-icon {
+      margin-left: 0.25rem;
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Chart Styles */
+    .chart-section {
+      margin-bottom: 2rem;
+    }
+
+    .chart-container {
+      height: 300px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* My Portfolio Styles */
+    .portfolio-section {
+      margin-bottom: 2rem;
+    }
+
+    .portfolio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .portfolio-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .portfolio-value {
+      font-size: 1rem;
+    }
+
+    .portfolio-value-amount {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Portfolio Table Styles */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: rgba(15, 23, 42, 0.3);
+    }
+
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: hsl(var(--muted-foreground));
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 1rem;
+      border-top: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 0.875rem;
+    }
+
+    .table-row {
+      transition: background-color 0.15s ease;
+    }
+
+    .table-row:hover {
+      background-color: rgba(51, 65, 85, 0.3);
+    }
+
+    .stock-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+    }
+
+    .stock-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .stock-name-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stock-symbol {
+      font-weight: 600;
+    }
+
+    .stock-fullname {
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .stock-quantity {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stock-price {
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sell-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quantity-input {
+      width: 60px;
+      padding: 0.25rem 0.5rem;
+      background-color: rgba(51, 65, 85, 0.3);
+      border: 1px solid #334155;
+      border-radius: var(--radius);
+      color: hsl(var(--foreground));
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(51, 65, 85, 0.3);
+      border-radius: 50%;
+      border-top-color: hsl(var(--primary));
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Buy new stock section */
+    .buy-section {
+      margin-top: 2rem;
+    }
+
+    .buy-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: rgba(51, 65, 85, 0.3);
+      border: 1px solid #334155;
+      border-radius: var(--radius);
+      color: hsl(var(--foreground));
+      font-size: 0.875rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: hsl(var(--primary));
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+          <polyline points="16 7 22 7 22 13"></polyline>
+        </svg>
+        <h1 class="brand-name">TradeSense</h1>
+      </div>
+      
+      <div class="nav-actions">
+        <button class="button button-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+          </svg>
+          Wallet
+        </button>
+        <button class="button button-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Buy Stock
+        </button>
+        <button class="button button-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Market Overview -->
+    <div class="market-overview">
+      <div class="market-card">
+        <div class="market-card-label">Market</div>
+        <div class="market-card-value" id="marketStatus">Bullish</div>
+      </div>
+      
+      <div class="market-card">
+        <div class="market-card-label">Leader</div>
+        <div class="market-card-value" id="marketLeader">AAPL</div>
+      </div>
+      
+      <div class="market-card">
+        <div class="market-card-label">Hottest Sector</div>
+        <div class="market-card-value" id="hottestSector">Technology</div>
+        <div class="market-card-change positive" id="hottestSectorChange">
+          <span>+1.84%</span>
+          <svg class="change-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="market-card">
+        <div class="market-card-label">Worst Sector</div>
+        <div class="market-card-value" id="worstSector">Energy</div>
+        <div class="market-card-change negative" id="worstSectorChange">
+          <span>-1.98%</span>
+          <svg class="change-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="market-card">
+        <div class="market-card-label">Top Stock</div>
+        <div class="market-card-value" id="topStock">WPM</div>
+        <div class="market-card-change positive" id="topStockChange">
+          <span>+1.90%</span>
+          <svg class="change-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="market-card">
+        <div class="market-card-label">Worst Stock</div>
+        <div class="market-card-value" id="worstStock">PLTR</div>
+        <div class="market-card-change negative" id="worstStockChange">
+          <span>-6.73%</span>
+          <svg class="change-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Portfolio Section -->
+    <section class="portfolio-section">
+      <div class="portfolio-header">
+        <h2 class="portfolio-title">My Portfolio</h2>
+        <div class="portfolio-value">
+          Total Value: <span class="portfolio-value-amount positive">$24,867.42</span>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">My Stocks</h3>
+          <div class="card-subtitle">Updated just now</div>
+        </div>
+        
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Quantity</th>
+                <th>Buy Price</th>
+                <th>Current Price</th>
+                <th>Profit/Loss</th>
+                <th>Sell</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path>
+                        <path d="M10 2c1 .5 2 2 2 5"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">AAPL</span>
+                      <span class="stock-fullname">Apple Inc.</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">12</td>
+                <td class="stock-price">$165.23</td>
+                <td class="stock-price">$175.42</td>
+                <td class="positive">+$122.28 (6.17%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="12" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                        <path d="M6 8h4"></path>
+                        <path d="M14 8h4"></path>
+                        <path d="M6 12h4"></path>
+                        <path d="M14 12h4"></path>
+                        <path d="M6 16h4"></path>
+                        <path d="M14 16h4"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">MSFT</span>
+                      <span class="stock-fullname">Microsoft Corp.</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">8</td>
+                <td class="stock-price">$352.60</td>
+                <td class="stock-price">$410.34</td>
+                <td class="positive">+$461.92 (16.37%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="8" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 5H2v7l6.29 6.29c.94.94 2.48.94 3.42 0l3.58-3.58c.94-.94.94-2.48 0-3.42L9 5Z"></path>
+                        <path d="M6 9.01V9"></path>
+                        <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">META</span>
+                      <span class="stock-fullname">Meta Platforms Inc.</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">10</td>
+                <td class="stock-price">$480.25</td>
+                <td class="stock-price">$474.32</td>
+                <td class="negative">-$59.30 (-1.23%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="10" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 7 17l-5-5"></path>
+                        <path d="m22 10-7.5 7.5L13 16"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">NVDA</span>
+                      <span class="stock-fullname">NVIDIA Corporation</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">5</td>
+                <td class="stock-price">$890.45</td>
+                <td class="stock-price">$945.20</td>
+                <td class="positive">+$273.75 (6.15%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="5" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">GOOG</span>
+                      <span class="stock-fullname">Alphabet Inc.</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">6</td>
+                <td class="stock-price">$178.65</td>
+                <td class="stock-price">$175.22</td>
+                <td class="negative">-$20.58 (-1.92%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="6" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-row">
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-logo">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>
+                        <path d="M2 9h20"></path>
+                        <path d="M16 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
+                      </svg>
+                    </div>
+                    <div class="stock-name-container">
+                      <span class="stock-symbol">AMZN</span>
+                      <span class="stock-fullname">Amazon.com Inc.</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="stock-quantity">9</td>
+                <td class="stock-price">$182.75</td>
+                <td class="stock-price">$187.42</td>
+                <td class="positive">+$42.03 (2.56%)</td>
+                <td>
+                  <div class="sell-control">
+                    <input type="number" class="quantity-input" min="1" max="9" value="1">
+                    <button class="button button-destructive">Sell</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buy New Stock Section -->
+    <section class="buy-section">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Buy New Stock</h3>
+        </div>
+        <div class="card-content">
+          <form class="buy-form">
+            <div class="form-group">
+              <label for="stock-symbol" class="form-label">Stock Symbol</label>
+              <input type="text" id="stock-symbol" class="form-input" placeholder="e.g. AAPL" required>
+            </div>
+            <div class="form-group">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input type="number" id="quantity" class="form-input" placeholder="Number of shares" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="price" class="form-label">Current Price</label>
+              <input type="text" id="price" class="form-input" placeholder="$0.00" readonly>
+            </div>
+            <div class="form-group">
+              <label for="total" class="form-label">Total Cost</label>
+              <input type="text" id="total" class="form-input" placeholder="$0.00" readonly>
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+              <button type="submit" class="button button-primary">Buy Stock</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Get DOM elements
+    const stockSymbolInput = document.getElementById('stock-symbol');
+    const quantityInput = document.getElementById('quantity');
+    const priceInput = document.getElementById('price');
+    const totalInput = document.getElementById('total');
+    const buyForm = document.querySelector('.buy-form');
+    
+    // Simulate stock price lookup 
+    stockSymbolInput.addEventListener('blur', async () => {
+      const symbol = stockSymbolInput.value.trim().toUpperCase();
+      if (!symbol) return;
+      
+      // Show loading state
+      priceInput.value = 'Loading...';
+      totalInput.value = '';
+      
+      // Simulate API call
+      setTimeout(() => {
+        // This would normally be fetched from an API
+        const mockPrices = {
+          'AAPL': 175.42,
+          'MSFT': 410.34,
+          'GOOG': 175.22,
+          'AMZN': 187.42,
+          'META': 474.32,
+          'NVDA': 945.20,
+          'TSLA': 185.65,
+          'JPM': 198.43,
+          'V': 276.87,
+          'WMT': 68.92
+        };
+        
+        const price = mockPrices[symbol] || (Math.random() * 200 + 50).toFixed(2);
+        
+        // Update price input
+        priceInput.value = `$${price}`;
+        
+        // Update total if quantity is set
+        const quantity = parseInt(quantityInput.value) || 0;
+        if (quantity > 0) {
+          const total = (price * quantity).toFixed(2);
+          totalInput.value = `$${total}`;
+        }
+      }, 500);
+    });
+    
+    // Update total when quantity changes
+    quantityInput.addEventListener('input', () => {
+      const priceStr = priceInput.value.replace('$', '');
+      const price = parseFloat(priceStr) || 0;
+      const quantity = parseInt(quantityInput.value) || 0;
+      
+      const total = (price * quantity).toFixed(2);
+      totalInput.value = price > 0 ? `$${total}` : '';
+    });
+    
+    // Submit form - would normally send to backend
+    buyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const symbol = stockSymbolInput.value.trim().toUpperCase();
+      const quantity = parseInt(quantityInput.value) || 0;
+      const priceStr = priceInput.value.replace('$', '');
+      const price = parseFloat(priceStr) || 0;
+      
+      if (!symbol || quantity <= 0 || price <= 0) {
+        alert('Please fill out all fields correctly');
+        return;
+      }
+      
+      // Simulate purchase success
+      alert(`Successfully purchased ${quantity} shares of ${symbol} at $${price} per share`);
+      
+      // Reset form
+      stockSymbolInput.value = '';
+      quantityInput.value = '';
+      priceInput.value = '';
+      totalInput.value = '';
+    });
+    
+    // Add sell functionality
+    document.querySelectorAll('.button-destructive').forEach(button => {
+      button.addEventListener('click', function() {
+        const row = this.closest('.table-row');
+        const symbol = row.querySelector('.stock-symbol').textContent;
+        const input = row.querySelector('.quantity-input');
+        const quantity = parseInt(input.value) || 0;
+        const currentPriceText = row.querySelectorAll('.stock-price')[1].textContent;
+        const currentPrice = parseFloat(currentPriceText.replace('$', ''));
+        
+        if (quantity <= 0) {
+          alert('Please enter a valid quantity to sell');
+          return;
+        }
+        
+        // Simulate sell process
+        const totalSale = (quantity * currentPrice).toFixed(2);
+        alert(`Successfully sold ${quantity} shares of ${symbol} for a total of $${totalSale}`);
+        
+        // Update quantities (in a real app, this would come from the server)
+        const quantityCell = row.querySelector('.stock-quantity');
+        const currentQty = parseInt(quantityCell.textContent);
+        const newQty = currentQty - quantity;
+        
+        if (newQty <= 0) {
+          // Remove the entire row
+          row.remove();
+        } else {
+          // Update quantity
+          quantityCell.textContent = newQty;
+          input.max = newQty;
+          input.value = 1;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
